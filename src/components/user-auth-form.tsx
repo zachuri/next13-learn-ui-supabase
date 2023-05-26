@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
+import { useSupabase } from './providers/supabase-provider'
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -32,7 +33,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const [isGitHubLoading, setIsGitHubLoading] = React.useState<boolean>(false)
   // const searchParams = useSearchParams()
-  const supabase = createClientComponentClient()
+  const { supabase } = useSupabase()
   const router = useRouter()
   // const callbackUrl = (router.query?.redirectedFrom as string) ?? "/"
   const redirectUrl = "/dashboard"
