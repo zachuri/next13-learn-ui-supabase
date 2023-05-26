@@ -1,5 +1,7 @@
 import {
+  ArrowRight,
   ChevronLeft,
+  Laptop,
   Loader2,
   LucideProps,
   Moon,
@@ -11,11 +13,13 @@ import {
 export type Icon = LucideIcon
 
 export const Icons = {
+  arrowRight: ArrowRight,
   chevronLeft: ChevronLeft,
   spinner: Loader2,
   sun: SunMedium,
   moon: Moon,
   twitter: Twitter,
+  laptop: Laptop,
   logo: (props: LucideProps) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
       <path
