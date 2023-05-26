@@ -78,8 +78,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       })
     }
 
-    console.log(supabase.auth.getSession)
-
     return toast({
       title: "Check your email",
       description: "We sent you a login link. Be sure to check your spam too.",
