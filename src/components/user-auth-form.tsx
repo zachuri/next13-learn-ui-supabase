@@ -1,8 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { useSearchParams } from "next/navigation"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 // import { signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -29,33 +31,73 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   })
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const [isGitHubLoading, setIsGitHubLoading] = React.useState<boolean>(false)
-  const searchParams = useSearchParams()
+  // const searchParams = useSearchParams()
+  const supabase = createClientComponentClient()
+  const router = useRouter()
+  // const callbackUrl = (router.query?.redirectedFrom as string) ?? "/"
+  const redirectUrl = "/dashboard"
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession()
+      if (data.session) {
+        // void router.back();
+        // void router.push(callbackUrl)
+        void router.push(redirectUrl)
+        // void router.reload();
+      }
+    }
+
+    void checkSession()
+  })
 
   async function onSubmit(data: FormData) {
     setIsLoading(true)
+    const email = data.email
+    const password = data.password
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
 
     // ToDo -> create a sign in
     // const signInResult = await signIn("email", {
     //   email: data.email.toLowerCase(),
     //   redirect: false,
-    //   callbackUrl: searchParams?.get("from") || "/dashboard",
+    //   callbackUrl: searchParams?.get("from") || "/",
     // })
 
     setIsLoading(false)
 
-    // if (!signInResult?.ok) {
-    //   return toast({
-    //     title: "Something went wrong.",
-    //     description: "Your sign in request failed. Please try again.",
-    //     variant: "destructive",
-    //   })
-    // }
+    if (error) {
+      return toast({
+        title: "Something went wrong.",
+        description: "Your sign in request failed. Please try again.",
+        variant: "destructive",
+      })
+    }
+
+    console.log(supabase.auth.getSession)
 
     return toast({
       title: "Check your email",
       description: "We sent you a login link. Be sure to check your spam too.",
     })
   }
+
+  async function signInWithGitHub() {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "github",
+    })
+  }
+
+  supabase.auth.onAuthStateChange((event) => {
+    if (event == "SIGNED_IN") {
+      // void router.reload();
+      router.push(redirectUrl)
+    }
+  })
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
@@ -74,6 +116,15 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               autoCorrect="off"
               disabled={isLoading || isGitHubLoading}
               {...register("email")}
+            />
+            <Input
+              id="password"
+              placeholder="6-15 characters, at least 1 number and 1 sybmol "
+              type="password"
+              autoCapitalize="none"
+              autoCorrect="off"
+              disabled={isLoading || isGitHubLoading}
+              {...register("password")}
             />
             {errors?.email && (
               <p className="px-1 text-xs text-red-600">
@@ -104,7 +155,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         className={cn(buttonVariants({ variant: "outline" }))}
         onClick={() => {
           setIsGitHubLoading(true)
-          // signIn("github")
+          signInWithGitHub()
         }}
         disabled={isLoading || isGitHubLoading}
       >
