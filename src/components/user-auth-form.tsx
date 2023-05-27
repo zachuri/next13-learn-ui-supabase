@@ -122,6 +122,19 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "github",
     })
+
+    if (error) {
+      return toast({
+        title: "Something went wrong.",
+        description: "Your sign in request failed. Please try again.",
+        variant: "destructive",
+      })
+    }
+
+    return toast({
+      title: "Successfully logged in!",
+      description: "Welcome Back! We were able to authenticate your account.",
+    })
   }
 
   supabase.auth.onAuthStateChange((event) => {
