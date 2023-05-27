@@ -112,9 +112,8 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
       }
 
       return toast({
-        title: "Check your email",
-        description:
-          "We sent you a login link. Be sure to check your spam too.",
+        title: "Successfully logged in!",
+        description: "Welcome Back! We were able to authenticate your account.",
       })
     }
   }
