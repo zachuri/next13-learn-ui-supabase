@@ -7,6 +7,7 @@ import type { SupabaseClient } from "@supabase/auth-helpers-nextjs"
 import { siteConfig } from "@/config/site"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
+import { Toaster } from "@/components/ui/toaster"
 import SupabaseListener from "@/components/providers/supabase-listener"
 import SupabaseProvider from "@/components/providers/supabase-provider"
 import { SiteHeader } from "@/components/site-header"
@@ -59,6 +60,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
               <div className="relative flex min-h-screen flex-col">
                 <div className="flex-1">{children}</div>
               </div>
+              <Toaster />
               <TailwindIndicator />
             </ThemeProvider>
           </SupabaseProvider>
