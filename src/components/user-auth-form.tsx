@@ -16,13 +16,16 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
-import { useSupabase } from './providers/supabase-provider'
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+import { useSupabase } from "./providers/supabase-provider"
+
+interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
+  type: string
+}
 
 type FormData = z.infer<typeof userAuthSchema>
 
-export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
   const {
     register,
     handleSubmit,
@@ -32,7 +35,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   })
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const [isGitHubLoading, setIsGitHubLoading] = React.useState<boolean>(false)
-  // const searchParams = useSearchParams()
   const { supabase } = useSupabase()
   const router = useRouter()
   // const callbackUrl = (router.query?.redirectedFrom as string) ?? "/"
@@ -53,36 +55,68 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   })
 
   async function onSubmit(data: FormData) {
-    setIsLoading(true)
-    const email = data.email
-    const password = data.password
+    if (type === "register") {
+      console.log("REGISTER CALLED")
+      setIsLoading(true)
+      const email = data.email
+      const password = data.password
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${location.origin}/auth/callback/` || "/",
+        },
+      })
 
-    // ToDo -> create a sign in
-    // const signInResult = await signIn("email", {
-    //   email: data.email.toLowerCase(),
-    //   redirect: false,
-    //   callbackUrl: searchParams?.get("from") || "/",
-    // })
+      setIsLoading(false)
 
-    setIsLoading(false)
+      if (error) {
+        return toast({
+          title: "Something went wrong.",
+          description: "Your sign up request failed. Please try again.",
+          variant: "destructive",
+        })
+      }
 
-    if (error) {
       return toast({
-        title: "Something went wrong.",
-        description: "Your sign in request failed. Please try again.",
-        variant: "destructive",
+        title: "Check your email",
+        description:
+          "We sent you a login link. Be sure to check your spam too.",
+      })
+    } else {
+      setIsLoading(true)
+      const email = data.email
+      const password = data.password
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      // ToDo -> create a sign in
+      // const signInResult = await signIn("email", {
+      //   email: data.email.toLowerCase(),
+      //   redirect: false,
+      //   callbackUrl: searchParams?.get("from") || "/",
+      // })
+
+      setIsLoading(false)
+
+      if (error) {
+        return toast({
+          title: "Something went wrong.",
+          description: "Your sign in request failed. Please try again.",
+          variant: "destructive",
+        })
+      }
+
+      return toast({
+        title: "Check your email",
+        description:
+          "We sent you a login link. Be sure to check your spam too.",
       })
     }
-
-    return toast({
-      title: "Check your email",
-      description: "We sent you a login link. Be sure to check your spam too.",
-    })
   }
 
   async function signInWithGitHub() {
@@ -118,7 +152,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             />
             <Input
               id="password"
-              placeholder="6-15 characters, at least 1 number and 1 sybmol "
+              placeholder="password"
               type="password"
               autoCapitalize="none"
               autoCorrect="off"
@@ -135,7 +169,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Sign In with Email
+            {type == "register" ? "Sign Up with Email" : "Sign In with Email"}
           </button>
         </div>
       </form>
