@@ -1,9 +1,14 @@
 import React from "react"
+import { redirect } from "next/navigation"
 import { createServerClient } from "@/utils/supabase-server"
 
 export default async function DashboardPage() {
   const supabase = createServerClient()
   const session = await supabase.auth.getSession()
+
+  if (!session.data.session?.user) {
+    redirect("/login")
+  }
 
   const { data: profiles } = await supabase
     .from("profiles")
