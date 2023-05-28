@@ -56,7 +56,6 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
 
   async function onSubmit(data: FormData) {
     if (type === "register") {
-      console.log("REGISTER CALLED")
       setIsLoading(true)
       const email = data.email
       const password = data.password
@@ -121,17 +120,15 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
   async function signInWithGitHub() {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "github",
+      // options: {
+      //   redirectTo: `${window.location.origin}`,
+      // },
+      options: {
+        // redirect to their last page
+        redirectTo: window.location.href,
+      },
     })
-
-    router.push(redirectUrl)
   }
-
-  supabase.auth.onAuthStateChange((event) => {
-    if (event == "SIGNED_IN") {
-      // void router.reload();
-      router.push(redirectUrl)
-    }
-  })
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
