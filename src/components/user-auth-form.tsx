@@ -123,18 +123,7 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
       provider: "github",
     })
 
-    if (error) {
-      return toast({
-        title: "Something went wrong.",
-        description: "Your sign in request failed. Please try again.",
-        variant: "destructive",
-      })
-    }
-
-    return toast({
-      title: "Successfully logged in!",
-      description: "Welcome Back! We were able to authenticate your account.",
-    })
+    router.push(redirectUrl)
   }
 
   supabase.auth.onAuthStateChange((event) => {
