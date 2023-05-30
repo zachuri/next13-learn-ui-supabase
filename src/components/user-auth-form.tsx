@@ -73,7 +73,7 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
       if (error) {
         return toast({
           title: "Something went wrong.",
-          description: "Your sign up request failed. Please try again.",
+          description: error.message,
           variant: "destructive",
         })
       }
@@ -105,7 +105,7 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
       if (error) {
         return toast({
           title: "Something went wrong.",
-          description: "Your sign in request failed. Please try again.",
+          description: error.message,
           variant: "destructive",
         })
       }
@@ -118,15 +118,29 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
   }
 
   async function signInWithGitHub() {
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "github",
       // options: {
       //   redirectTo: `${window.location.origin}`,
       // },
       options: {
         // redirect to their last page
-        redirectTo: window.location.href,
+        // redirectTo: window.location.href,
+        redirectTo: process.env.NEXT_PUBLIC_SITE_URL,
       },
+    })
+
+    if (error) {
+      return toast({
+        title: "Something went wrong.",
+        description: error.message,
+        variant: "destructive",
+      })
+    }
+
+    return toast({
+      title: "Successfully logged in!",
+      description: "Welcome Back! We were able to authenticate your account.",
     })
   }
 
