@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation"
+import { createServerClient } from "@/utils/supabase-server"
 
 // import { authOptions } from "@/lib/auth"
 import { getCurrentUser } from "@/lib/session"
@@ -23,11 +24,12 @@ export const metadata = {
 }
 
 export default async function BillingPage() {
-  const user = await getCurrentUser()
+  const supabase = createServerClient()
+  const session = await supabase.auth.getSession()
 
-  // if (!user) {
-  //   redirect(authOptions?.pages?.signIn || "/login")
-  // }
+  if (!session.data.session?.user) {
+    redirect("/login")
+  }
 
   // const subscriptionPlan = await getUserSubscriptionPlan(user.id)
 
