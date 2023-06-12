@@ -2,27 +2,25 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-
-// import { SidebarNavItem } from "@/types"
+import { SidebarNavItem } from "@/types"
 
 import { cn } from "@/lib/utils"
 import { Icons } from "@/components/icons"
 
 interface DashboardNavProps {
-  // items: SidebarNavItem[]
+  items: SidebarNavItem[]
 }
 
-// export function DashboardNav({ items }: DashboardNavProps) {
-export function DashboardNav() {
+export function DashboardNav({ items }: DashboardNavProps) {
   const path = usePathname()
 
-  // if (!items?.length) {
-  //   return null
-  // }
+  if (!items?.length) {
+    return null
+  }
 
   return (
     <nav className="grid items-start gap-2">
-      {/* {items.map((item, index) => {
+      {items.map((item, index) => {
         const Icon = Icons[item.icon || "arrowRight"]
         return (
           item.href && (
@@ -40,7 +38,7 @@ export function DashboardNav() {
             </Link>
           )
         )
-      })} */}
+      })}
     </nav>
   )
 }

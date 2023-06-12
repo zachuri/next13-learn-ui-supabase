@@ -1,11 +1,18 @@
 import {
+  AlertTriangle,
   ArrowRight,
   ChevronLeft,
+  CreditCard,
+  FileText,
   Laptop,
   Loader2,
   LucideProps,
   Moon,
+  MoreVertical,
+  Plus,
+  Settings,
   SunMedium,
+  Trash,
   Twitter,
   User,
   type Icon as LucideIcon,
@@ -14,6 +21,9 @@ import {
 export type Icon = LucideIcon
 
 export const Icons = {
+  trash: Trash,
+  ellipsis: MoreVertical,
+  add: Plus,
   user: User,
   arrowRight: ArrowRight,
   chevronLeft: ChevronLeft,
@@ -22,6 +32,10 @@ export const Icons = {
   moon: Moon,
   twitter: Twitter,
   laptop: Laptop,
+  warning: AlertTriangle,
+  billing: CreditCard,
+  post: FileText,
+  settings: Settings,
   logo: (props: LucideProps) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
       <path
