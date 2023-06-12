@@ -102,7 +102,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
             </Label>
             <Input
               id="name"
-              className="w-[400px]"
+              className="w-96 max-sm:w-60"
               size={32}
               {...register("name")}
             />
@@ -124,7 +124,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
             </Label>
             <Input
               id="username"
-              className="w-[400px]"
+              className="w-96 max-sm:w-60"
               size={32}
               {...register("username")}
             />
