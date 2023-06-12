@@ -149,11 +149,6 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
         variant: "destructive",
       })
     }
-
-    return toast({
-      title: "Successfully logged in!",
-      description: "Welcome Back! We were able to authenticate your account.",
-    })
   }
 
   return (
