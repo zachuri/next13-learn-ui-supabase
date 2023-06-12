@@ -17,13 +17,14 @@ import {
 import { UserAvatar } from "@/components/user-avatar"
 
 type User = {
-  name: string | null
+  username: string | null
+  full_name: string | null
   image: string | null
   email: string | null | undefined
 }
 
 interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
-  user: Pick<User, "name" | "image" | "email">
+  user: Pick<User, "username" | "full_name" | "image" | "email">
 }
 
 export function UserAccountNav({ user }: UserAccountNavProps) {
@@ -39,14 +40,15 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <UserAvatar
-          user={{ name: user.name || null, image: user.image || null }}
+          user={{ name: user.full_name || null, image: user.image || null }}
           className="h-8 w-8"
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">
-            {user.name && <p className="font-medium">{user.name}</p>}
+            {user.username && <p className="font-medium">{user.username}</p>}
+            {user.full_name && <p className="font-medium">{user.full_name}</p>}
             {user.email && (
               <p className="w-[200px] truncate text-sm text-muted-foreground">
                 {user.email}
