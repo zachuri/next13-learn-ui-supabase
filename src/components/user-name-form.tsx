@@ -2,7 +2,9 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
+import { createBrowserClient } from "@/utils/supabase-browser"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs"
 import { User } from "@supabase/supabase-js"
 // import { User } from "@prisma/client"
 import { useForm } from "react-hook-form"
@@ -37,6 +39,8 @@ interface UserNameFormProps extends React.HTMLAttributes<HTMLFormElement> {
 type FormData = z.infer<typeof userNameSchema>
 
 export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
+  const supabase = createBrowserClient()
+
   const router = useRouter()
   const {
     handleSubmit,
@@ -54,19 +58,14 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
   async function onSubmit(data: FormData) {
     setIsSaving(true)
 
-    const response = await fetch(`/api/users/${user.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: data.name,
-      }),
-    })
+    const { data: response, error } = await supabase
+      .from("profiles")
+      .update({ username: data.username, full_name: data.name })
+      .eq("id", user.id)
 
     setIsSaving(false)
 
-    if (!response?.ok) {
+    if (error) {
       return toast({
         title: "Something went wrong.",
         description: "Your name was not updated. Please try again.",
@@ -75,7 +74,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
     }
 
     toast({
-      description: "Your name has been updated.",
+      description: "Your chnages have been updated.",
     })
 
     router.refresh()
