@@ -66,15 +66,22 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
     setIsSaving(false)
 
     if (error) {
+      if (error.code === "23505") {
+        return toast({
+          title: "Something went wrong.",
+          description: "Username already exist. Please enter another",
+          variant: "destructive",
+        })
+      }
       return toast({
         title: "Something went wrong.",
-        description: "Your name was not updated. Please try again.",
+        description: "No updated was made",
         variant: "destructive",
       })
     }
 
     toast({
-      description: "Your chnages have been updated.",
+      description: "Your changes have been updated.",
     })
 
     router.refresh()
