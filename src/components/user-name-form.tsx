@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { createBrowserClient } from "@/utils/supabase-browser"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -26,14 +27,21 @@ import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
+
 interface Profile {
   id: string
   full_name: string
   username: string
+  avatar_url: string
+  website: string
 }
 
 interface UserNameFormProps extends React.HTMLAttributes<HTMLFormElement> {
-  user: Pick<Profile, "id" | "full_name" | "username">
+  user: Pick<
+    Profile,
+    "id" | "full_name" | "username" | "avatar_url" | "website"
+  >
 }
 
 type FormData = z.infer<typeof userNameSchema>
@@ -51,6 +59,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
     defaultValues: {
       name: user?.full_name || "",
       username: user?.username || "",
+      website: user?.website || "",
     },
   })
   const [isSaving, setIsSaving] = React.useState<boolean>(false)
@@ -60,7 +69,11 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
 
     const { data: response, error } = await supabase
       .from("profiles")
-      .update({ username: data.username, full_name: data.name })
+      .update({
+        username: data.username,
+        full_name: data.name,
+        website: data.website,
+      })
       .eq("id", user.id)
 
     setIsSaving(false)
@@ -95,6 +108,18 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
     >
       <Card>
         <CardHeader>
+          <CardTitle>Avatar Image</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Image
+            className="rounded-full"
+            src={user.avatar_url}
+            alt={"user profile image"}
+            height={200}
+            width={200}
+          />
+        </CardContent>
+        <CardHeader>
           <CardTitle>Your Name</CardTitle>
           <CardDescription>
             Please enter your full name or a display name you are comfortable
@@ -110,6 +135,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
               id="name"
               className="w-96 max-sm:w-60"
               size={32}
+              placeholder="Please enter your full name"
               {...register("name")}
             />
             {errors?.name && (
@@ -132,7 +158,29 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
               id="username"
               className="w-96 max-sm:w-60"
               size={32}
+              placeholder="Please enter a username"
               {...register("username")}
+            />
+            {errors?.name && (
+              <p className="px-1 text-xs text-red-600">{errors.name.message}</p>
+            )}
+          </div>
+        </CardContent>
+        <CardHeader>
+          <CardTitle>Your Website</CardTitle>
+          <CardDescription>Please enter your personal website</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-1">
+            <Label className="sr-only" htmlFor="name">
+              Name
+            </Label>
+            <Input
+              id="website"
+              className="w-96 max-sm:w-60"
+              size={32}
+              placeholder="Please enter a website if you have one"
+              {...register("website")}
             />
             {errors?.name && (
               <p className="px-1 text-xs text-red-600">{errors.name.message}</p>

@@ -39,6 +39,8 @@ export default async function SettingsPage() {
             id: session.data.session.user.id,
             full_name: profiles?.[0]?.full_name || "",
             username: profiles?.[0]?.username || "",
+            avatar_url: profiles?.[0]?.avatar_url || "",
+            website: profiles?.[0]?.website || "",
           }}
         />
       </div>
