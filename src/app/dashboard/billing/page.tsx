@@ -1,18 +1,8 @@
 import { redirect } from "next/navigation"
 import { createServerClient } from "@/utils/supabase-server"
 
-// import { authOptions } from "@/lib/auth"
-import { getCurrentUser } from "@/lib/session"
-// import { stripe } from "@/lib/stripe"
-import { getUserSubscriptionPlan } from "@/lib/subscription"
+import getUserSubscriptionPlan from "@/lib/subscription"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { BillingForm } from "@/components/billing-form"
 import { DashboardHeader } from "@/components/header"
 import { Icons } from "@/components/icons"
@@ -29,13 +19,11 @@ export default async function BillingPage() {
   const supabase = createServerClient()
   const session = await supabase.auth.getSession()
 
-  if (!session.data.session?.user) {
+  const user = session.data.session?.user
+
+  if (!user) {
     redirect("/login")
   }
-
-  const subscriptionPlan = await getUserSubscriptionPlan({
-    user_id: session.data.session.user.id,
-  })
 
   // If user has a pro plan, check cancel status on Stripe.
   let isCanceled = false
@@ -47,6 +35,10 @@ export default async function BillingPage() {
   // }
 
   const products = await getActiveProductsWithPrices()
+
+  const subscriptionPlan = await getUserSubscriptionPlan({
+    user_id: user.id,
+  })
 
   return (
     <DashboardShell>
@@ -72,6 +64,8 @@ export default async function BillingPage() {
             .
           </AlertDescription>
         </Alert>
+        <h1>USER ID: {user.id}</h1>
+        <h1>SUBSCRIPTION ID ID: {subscriptionPlan?.id}</h1>
         <BillingForm
           subscriptionPlan={subscriptionPlan}
           isCanceled={isCanceled}

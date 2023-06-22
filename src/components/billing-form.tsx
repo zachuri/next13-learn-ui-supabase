@@ -67,6 +67,17 @@ export function BillingForm({
     }
   }
 
+  const redirectToCustomerPortal = async () => {
+    try {
+      const { url, error } = await postData({
+        url: "/api/create-portal-link",
+      })
+      window.location.assign(url)
+    } catch (error) {
+      if (error) return alert((error as Error).message)
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -94,10 +105,9 @@ export function BillingForm({
                     return (
                       <CardFooter
                         key={price.id}
-                        className="flex flex-col items-start space-y-2 md:flex-row md:justify-between md:space-x-0"
+                        className="flex flex-col items-start space-y-2 md:flex-row md:justify-between md:space-x-2"
                       >
                         <button
-                          type="submit"
                           className={cn(buttonVariants())}
                           disabled={isLoading}
                           onClick={() => onSubmit(price)}
@@ -105,7 +115,7 @@ export function BillingForm({
                           {isLoading && (
                             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                           )}
-                          {subscriptionPlan?.status
+                          {subscriptionPlan?.status === "active"
                             ? "Manage Subscription"
                             : `Subscribe for ${formatPrice(price)}`}
                         </button>
@@ -120,6 +130,15 @@ export function BillingForm({
                       </CardFooter>
                     )
                   })}
+                  <CardFooter className="flex flex-col items-start space-y-2 md:flex-row md:justify-between md:space-x-2">
+                    <button
+                      className={cn(buttonVariants())}
+                      disabled={isLoading}
+                      onClick={redirectToCustomerPortal}
+                    >
+                      Cancel
+                    </button>
+                  </CardFooter>
                 </Card>
               )
             })}
