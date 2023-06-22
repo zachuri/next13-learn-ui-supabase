@@ -4,7 +4,7 @@ import { createServerClient } from "@/utils/supabase-server"
 // import { authOptions } from "@/lib/auth"
 import { getCurrentUser } from "@/lib/session"
 // import { stripe } from "@/lib/stripe"
-// import { getUserSubscriptionPlan } from "@/lib/subscription"
+import { getUserSubscriptionPlan } from "@/lib/subscription"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   Card,
@@ -17,6 +17,8 @@ import { BillingForm } from "@/components/billing-form"
 import { DashboardHeader } from "@/components/header"
 import { Icons } from "@/components/icons"
 import { DashboardShell } from "@/components/shell"
+
+import getActiveProductsWithPrices from "./getActiveProductsWithPrices"
 
 export const metadata = {
   title: "Billing",
@@ -31,7 +33,9 @@ export default async function BillingPage() {
     redirect("/login")
   }
 
-  // const subscriptionPlan = await getUserSubscriptionPlan(user.id)
+  const subscriptionPlan = await getUserSubscriptionPlan({
+    user_id: session.data.session.user.id,
+  })
 
   // If user has a pro plan, check cancel status on Stripe.
   let isCanceled = false
@@ -41,6 +45,8 @@ export default async function BillingPage() {
   //   )
   //   isCanceled = stripePlan.cancel_at_period_end
   // }
+
+  const products = await getActiveProductsWithPrices()
 
   return (
     <DashboardShell>
@@ -66,12 +72,11 @@ export default async function BillingPage() {
             .
           </AlertDescription>
         </Alert>
-        {/* <BillingForm
-          subscriptionPlan={{
-            ...subscriptionPlan,
-            isCanceled,
-          }}
-        /> */}
+        <BillingForm
+          subscriptionPlan={subscriptionPlan}
+          isCanceled={isCanceled}
+          products={products}
+        />
       </div>
     </DashboardShell>
   )
