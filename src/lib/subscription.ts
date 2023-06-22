@@ -1,17 +1,25 @@
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { cookies } from "next/headers"
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 
-export async function getUserSubscriptionPlan({
+import { ProductWithPrice, Subscription } from "@/types/stripe"
+
+const getUserSubscriptionPlan = async ({
   user_id,
 }: {
   user_id: string
-}) {
-  const supabase = createClientComponentClient()
+}): Promise<Subscription> => {
+  const supabase = createServerComponentClient({
+    cookies: cookies,
+  })
 
-  const subscription = await supabase
+  const { data, error } = await supabase
     .from("subscriptions")
-    .select("*")
+    .select("*, prices(*, products(*))")
+    .in("status", ["trialing", "active"])
     .eq("user_id", user_id)
     .single()
 
-  return subscription.data
+  return data
 }
+
+export default getUserSubscriptionPlan
